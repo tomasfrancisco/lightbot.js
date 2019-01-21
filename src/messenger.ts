@@ -31,7 +31,7 @@ export class LightbotMessenger {
    * It will set the messenger state as open and initialize conversation
    * in case it's needed.
    */
-  public async toggleMessenger() {
+  public async toggleMessenger(): Promise<void> {
     if (!this.stateManager.agent.isInitialized) {
       await this.initMessenger();
       await this.stateManager.updateAgent({ isInitialized: true });
@@ -46,19 +46,21 @@ export class LightbotMessenger {
     return this.stateManager.layout.isMessengerOpen;
   }
 
-  public async sendMessage(message: Message) {
+  public async sendMessage(message: Message): Promise<void> {
     try {
-      let response;
+      let messagesResponse: APIMessage[] | undefined;
       if (message.type === "jump") {
-        response = await this.apiClient.postJump(message.label);
+        messagesResponse = await this.apiClient.postJump(message.label);
       } else {
-        response = await this.apiClient.postMessage(message.label);
+        messagesResponse = await this.apiClient.postMessage(message.label);
       }
-      if (response) {
-        this.stateManager.saveMessage({
-          ...response,
+      if (messagesResponse) {
+        const messages: Message[] = messagesResponse.map<Message>(message => ({
+          ...message,
           sender: "bot",
-        });
+        }));
+
+        this.stateManager.saveMessages(messages);
 
         this.pushUpdate();
       }
@@ -78,12 +80,14 @@ export class LightbotMessenger {
 
   private async initMessenger() {
     try {
-      const response = await this.apiClient.postStartConversation();
-      if (response) {
-        this.stateManager.saveMessage({
-          ...response,
+      const messagesResponse = await this.apiClient.postStartConversation();
+      if (messagesResponse) {
+        const messages: Message[] = messagesResponse.map<Message>(message => ({
+          ...message,
           sender: "bot",
-        });
+        }));
+
+        this.stateManager.saveMessages(messages);
 
         this.pushUpdate();
       }

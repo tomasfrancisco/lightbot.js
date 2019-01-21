@@ -18,7 +18,7 @@ describe("StateManager", () => {
 
       it("adds new message when message is saved", () => {
         const message: Message = { sender: "human", label: "test message", type: "plain" };
-        stateManager.saveMessage(message);
+        stateManager.saveMessages([message]);
 
         expect(stateManager.messages[0]).toMatchObject(message);
       });
@@ -102,7 +102,7 @@ describe("StateManager", () => {
 
       it("adds new message when message is saved", () => {
         const message: Message = { sender: "human", label: "test message", type: "plain" };
-        stateManager.saveMessage(message);
+        stateManager.saveMessages([message]);
 
         expect(stateManager.messages[0]).toMatchObject(message);
       });

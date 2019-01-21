@@ -59,8 +59,8 @@ export class StateManager {
     this.initAgentState();
   }
 
-  public saveMessage(message: Message) {
-    this.state.messages = this.state.messages.concat(message);
+  public saveMessages(messages: Message[]) {
+    this.state.messages = this.state.messages.concat(messages);
     this.updateMessagesStorage();
   }
 

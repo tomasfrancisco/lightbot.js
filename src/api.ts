@@ -7,14 +7,14 @@ export class LightbotAPI {
   /**
    * Initializes a new bot conversation
    */
-  public async postStartConversation(): Promise<APIMessage | undefined> {
+  public async postStartConversation(): Promise<APIMessage[] | undefined> {
     try {
       const response = await this.post("/start", {
         lightbot_agent_id: this.agentId,
       });
       const body = await response.json();
       if (body.data && body.data.bot) {
-        return body.data.bot as APIMessage;
+        return body.data.bot as APIMessage[];
       }
     } catch (err) {
       throw new Error("An error occurred while starting conversation.");
@@ -44,7 +44,7 @@ export class LightbotAPI {
    * Sends a message and gets a reply back
    * @param message string value the user typed
    */
-  public async postMessage(message: string): Promise<APIMessage | undefined> {
+  public async postMessage(message: string): Promise<APIMessage[] | undefined> {
     try {
       const response = await this.post("", {
         human: message,
@@ -53,7 +53,7 @@ export class LightbotAPI {
 
       const body = await response.json();
       if (body.data && body.data.bot) {
-        return body.data.bot as APIMessage;
+        return body.data.bot as APIMessage[];
       }
     } catch (err) {
       throw new Error("An error occurred while sending a message.");
@@ -65,7 +65,7 @@ export class LightbotAPI {
    * Sends a jump id and gets a reply back
    * @param jump id the user selected from jump options
    */
-  public async postJump(jump: string) {
+  public async postJump(jump: string): Promise<APIMessage[] | undefined> {
     try {
       const response = await this.post("/jump", {
         jump,
@@ -74,7 +74,7 @@ export class LightbotAPI {
 
       const body = await response.json();
       if (body.data && body.data.bot) {
-        return body.data.bot as APIMessage;
+        return body.data.bot as APIMessage[];
       }
     } catch (err) {
       throw new Error("An error occured while sending a jump.");

@@ -18,11 +18,7 @@ export interface APIJumpMessage extends IMessage {
   }>;
 }
 
-export interface APIDecoratedMessage extends IMessage {
-  objects: APIMessage[];
-}
-
-export type APIMessage = APIPlainMessage | APILinkMessage | APIJumpMessage | APIDecoratedMessage;
+export type APIMessage = APIPlainMessage | APILinkMessage | APIJumpMessage;
 
 export type APIAgentData = {
   name?: string;
