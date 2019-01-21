@@ -1,5 +1,10 @@
 # Lightbot.js
 
+## About
+
+Lightbot.js is a client javascript SDK
+> It allows the developer to easily communicate with any lightbot agent.
+
 ## Example
 
 ```typescript
