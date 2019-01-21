@@ -1,0 +1,15 @@
+{
+  "presets": [
+    "@babel/preset-typescript",
+    [
+      "@babel/env",
+      {
+        "targets": {
+          "browsers": ["last 5 versions", "not ie < 10"]
+        }
+      }
+    ]
+  ],
+  "only": ["src/**"],
+  "plugins": ["@babel/plugin-proposal-class-properties"]
+}
