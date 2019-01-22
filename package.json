@@ -2,9 +2,11 @@
   "name": "lightbot",
   "version": "1.0.0",
   "description": "Javascript Client for Lightbot API",
-  "main": "lib/lightbot.js",
+  "main": "lib/messenger.js",
   "scripts": {
-    "build": "webpack --config webpack.config.js",
+    "build": "rm -rf lib && yarn build:js && yarn build:types",
+    "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline",
+    "build:types": "tsc --emitDeclarationOnly",
     "test": "jest",
     "test:watch": "jest --watch --coverage",
     "test:coverage": "jest --coverage"
@@ -23,6 +25,7 @@
     "cross-fetch": "^3.0.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
     "@babel/plugin-proposal-class-properties": "^7.2.3",
     "@babel/preset-env": "^7.2.3",
@@ -38,7 +41,6 @@
     "source-map-loader": "^0.2.4",
     "ts-jest": "^23.10.5",
     "tslint": "^5.12.1",
-    "webpack": "^4.28.4",
-    "webpack-cli": "^3.2.1"
+    "typescript": "^3.2.4"
   }
 }

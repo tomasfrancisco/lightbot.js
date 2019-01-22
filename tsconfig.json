@@ -11,11 +11,12 @@
     "noUnusedLocals": true,
     "lib": ["esnext", "dom"],
     "module": "commonjs",
-    "target": "es5",
-    "outDir": "lib",
-    "rootDir": ".",
+    "target": "esnext",
+    "outDir": "./lib",
+    "rootDir": "./src",
     "baseUrl": "src",
-    "declaration": true
+    "declaration": true,
+    "allowSyntheticDefaultImports": true
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "lib"]
 }
