@@ -1,10 +1,11 @@
-import { Message } from "./messenger";
 import { APIAgentData } from "api.types";
 
-export type LayoutState = {
+import { Message } from "./messenger";
+
+export interface LayoutState {
   isMessengerOpen?: boolean;
   [propName: string]: any;
-};
+}
 
 export type AgentState = APIAgentData & {
   isInitialized?: boolean;
@@ -15,12 +16,12 @@ export type AgentState = APIAgentData & {
  * Internal State for State Manager
  * Some properties are not exposed, so it means the type should not be exposed either
  */
-type StoreState = {
+interface StoreState {
   isLocalStorageAvailable?: boolean;
   messages: Message[];
   agent: AgentState;
   layout: LayoutState;
-};
+}
 
 type StoreKeys = { [K in keyof StoreState]: string };
 
@@ -33,24 +34,25 @@ type StoreKeys = { [K in keyof StoreState]: string };
  * WARNING: NEVER USE STATE MANAGER TO DEAL WITH CRITICAL DATA
  */
 export class StateManager {
+  public static keys: StoreKeys = {
+    agent: StateManager.getKey("agent"),
+    layout: StateManager.getKey("layout"),
+    messages: StateManager.getKey("messages"),
+  };
+
   private static salt = "19Hgw012xn!@";
   private static getKey(value: keyof StoreState) {
     return `${StateManager.salt}${value}`;
   }
-  static keys: StoreKeys = {
-    messages: StateManager.getKey("messages"),
-    agent: StateManager.getKey("agent"),
-    layout: StateManager.getKey("layout"),
-  };
 
   private state: StoreState = {
-    messages: [],
     agent: {
       isInitialized: false,
     },
     layout: {
       isMessengerOpen: false,
     },
+    messages: [],
   };
 
   constructor() {

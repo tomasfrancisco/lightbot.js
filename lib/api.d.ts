@@ -1,4 +1,4 @@
-import { APIMessage, APIAgentData } from "./api.types";
+import { APIAgentData, APIMessage } from "./api.types";
 export declare class LightbotAPI {
     private hostURL;
     private agentId;

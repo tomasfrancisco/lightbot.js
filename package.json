@@ -11,6 +11,12 @@
     "test:watch": "jest --watch --coverage",
     "test:coverage": "jest --coverage"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn build && git add lib/*",
+      "pre-push": "yarn test"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tomasfrancisco/lightbot.js.git"
@@ -35,6 +41,7 @@
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
     "babel-loader": "^8.0.5",
+    "husky": "^1.3.1",
     "jest": "^23.6.0",
     "jest-localstorage-mock": "^2.4.0",
     "regenerator-runtime": "^0.13.1",

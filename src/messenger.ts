@@ -1,6 +1,6 @@
 import { LightbotAPI } from "./api";
-import { StateManager } from "./state-manager";
 import { APIMessage } from "./api.types";
+import { StateManager } from "./state-manager";
 
 export type Message = APIMessage & {
   sender: "human" | "bot" | "supporter";
@@ -8,7 +8,7 @@ export type Message = APIMessage & {
 
 type MessageListenerHandler = (messages: Message[]) => void;
 
-interface LightbotMessengerProps {
+export interface LightbotMessengerProps {
   hostURL: string;
   agentId: string;
   messageListener?: MessageListenerHandler;
@@ -55,8 +55,8 @@ export class LightbotMessenger {
         messagesResponse = await this.apiClient.postMessage(message.label);
       }
       if (messagesResponse) {
-        const messages: Message[] = messagesResponse.map<Message>(message => ({
-          ...message,
+        const messages: Message[] = messagesResponse.map<Message>(messageResponse => ({
+          ...messageResponse,
           sender: "bot",
         }));
 

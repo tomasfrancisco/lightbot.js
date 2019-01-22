@@ -1,4 +1,9 @@
 {
   "extends": ["tslint:recommended"],
-  "rules": {}
+  "rules": {
+    "interface-name": false,
+    "no-empty-interface": false,
+    "arrow-parens": false,
+    "no-console": false
+  }
 }

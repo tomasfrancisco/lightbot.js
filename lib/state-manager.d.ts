@@ -1,9 +1,9 @@
-import { Message } from "./messenger";
 import { APIAgentData } from "api.types";
-export declare type LayoutState = {
+import { Message } from "./messenger";
+export interface LayoutState {
     isMessengerOpen?: boolean;
     [propName: string]: any;
-};
+}
 export declare type AgentState = APIAgentData & {
     isInitialized?: boolean;
     [propName: string]: any;
@@ -12,12 +12,12 @@ export declare type AgentState = APIAgentData & {
  * Internal State for State Manager
  * Some properties are not exposed, so it means the type should not be exposed either
  */
-declare type StoreState = {
+interface StoreState {
     isLocalStorageAvailable?: boolean;
     messages: Message[];
     agent: AgentState;
     layout: LayoutState;
-};
+}
 declare type StoreKeys = {
     [K in keyof StoreState]: string;
 };
@@ -30,9 +30,9 @@ declare type StoreKeys = {
  * WARNING: NEVER USE STATE MANAGER TO DEAL WITH CRITICAL DATA
  */
 export declare class StateManager {
+    static keys: StoreKeys;
     private static salt;
     private static getKey;
-    static keys: StoreKeys;
     private state;
     constructor();
     saveMessages(messages: Message[]): void;

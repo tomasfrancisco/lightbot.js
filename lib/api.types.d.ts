@@ -15,7 +15,7 @@ export interface APIJumpMessage extends IMessage {
     }>;
 }
 export declare type APIMessage = APIPlainMessage | APILinkMessage | APIJumpMessage;
-export declare type APIAgentData = {
+export interface APIAgentData {
     name?: string;
     widgetInputPlaceholder?: string;
     widgetTeaser?: string;
@@ -23,5 +23,5 @@ export declare type APIAgentData = {
         [propName: string]: string;
     };
     widgetHotspotIcon?: string;
-};
+}
 export {};

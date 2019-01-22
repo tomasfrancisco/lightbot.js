@@ -1,5 +1,6 @@
 import { fetch } from "cross-fetch";
-import { APIMessage, APIAgentData } from "./api.types";
+
+import { APIAgentData, APIMessage } from "./api.types";
 
 export class LightbotAPI {
   constructor(private hostURL: string, private agentId: string) {}
@@ -85,11 +86,11 @@ export class LightbotAPI {
 
   private async post(endpoint: string, body: object) {
     return await fetch(`${this.hostURL}${endpoint}`, {
-      method: "POST",
+      body: JSON.stringify(body),
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(body),
+      method: "POST",
     });
   }
 

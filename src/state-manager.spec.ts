@@ -1,10 +1,8 @@
-import { StateManager, LayoutState, AgentState } from "./state-manager";
 import { Message } from "./messenger";
+import { AgentState, LayoutState, StateManager } from "./state-manager";
 
 describe("StateManager", () => {
   describe("localStorage unavailable", () => {
-    beforeEach(() => {});
-
     it("not throw any error on constructor", () => {
       expect(new StateManager()).toThrowErrorMatchingSnapshot();
     });
@@ -32,8 +30,8 @@ describe("StateManager", () => {
 
     describe("layout", () => {
       let stateManager: StateManager;
-      let initialLayout: LayoutState = { isMessengerOpen: false };
-      let overrideLayout: LayoutState = { someValue: true };
+      const initialLayout: LayoutState = { isMessengerOpen: false };
+      const overrideLayout: LayoutState = { someValue: true };
 
       beforeEach(() => {
         stateManager = new StateManager();
@@ -116,8 +114,8 @@ describe("StateManager", () => {
 
     describe("layout", () => {
       let stateManager: StateManager;
-      let initialLayout: LayoutState = { isMessengerOpen: false };
-      let overrideLayout: LayoutState = { someValue: true };
+      const initialLayout: LayoutState = { isMessengerOpen: false };
+      const overrideLayout: LayoutState = { someValue: true };
 
       beforeEach(() => {
         stateManager = new StateManager();

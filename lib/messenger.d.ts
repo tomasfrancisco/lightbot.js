@@ -3,7 +3,7 @@ export declare type Message = APIMessage & {
     sender: "human" | "bot" | "supporter";
 };
 declare type MessageListenerHandler = (messages: Message[]) => void;
-interface LightbotMessengerProps {
+export interface LightbotMessengerProps {
     hostURL: string;
     agentId: string;
     messageListener?: MessageListenerHandler;

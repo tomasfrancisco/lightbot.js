@@ -20,10 +20,10 @@ export interface APIJumpMessage extends IMessage {
 
 export type APIMessage = APIPlainMessage | APILinkMessage | APIJumpMessage;
 
-export type APIAgentData = {
+export interface APIAgentData {
   name?: string;
   widgetInputPlaceholder?: string;
   widgetTeaser?: string;
   widgetThemeData?: { [propName: string]: string };
   widgetHotspotIcon?: string;
-};
+}
