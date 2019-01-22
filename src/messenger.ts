@@ -6,7 +6,7 @@ export type Message = APIMessage & {
   sender: "human" | "bot" | "supporter";
 };
 
-type MessageListenerHandler = (messages: Message[]) => void;
+export type MessageListenerHandler = (messages: Message[]) => void;
 
 export interface LightbotMessengerProps {
   hostURL: string;
