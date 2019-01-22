@@ -11,7 +11,7 @@
     "noUnusedLocals": true,
     "lib": ["esnext", "dom"],
     "module": "commonjs",
-    "target": "esnext",
+    "target": "es5",
     "outDir": "./lib",
     "rootDir": "./src",
     "baseUrl": "src",

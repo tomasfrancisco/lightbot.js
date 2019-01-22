@@ -4,6 +4,7 @@
     "interface-name": false,
     "no-empty-interface": false,
     "arrow-parens": false,
-    "no-console": false
+    "no-console": false,
+    "semicolon": [true, "ignore-bound-class-methods"]
   }
 }

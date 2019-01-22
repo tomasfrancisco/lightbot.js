@@ -11,5 +11,9 @@
     ]
   ],
   "only": ["src/**"],
-  "plugins": ["@babel/plugin-proposal-class-properties"]
+  "plugins": [
+    "@babel/plugin-transform-typescript",
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-transform-classes"
+  ]
 }

@@ -8,7 +8,7 @@ export class LightbotAPI {
   /**
    * Initializes a new bot conversation
    */
-  public async postStartConversation(): Promise<APIMessage[] | undefined> {
+  public postStartConversation = async (): Promise<APIMessage[] | undefined> => {
     try {
       const response = await this.post("/start", {
         lightbot_agent_id: this.agentId,
@@ -21,7 +21,7 @@ export class LightbotAPI {
       throw new Error("An error occurred while starting conversation.");
     }
     return undefined;
-  }
+  };
 
   /**
    * Gets agent data, e.g. theme, logo, etc.
@@ -84,7 +84,7 @@ export class LightbotAPI {
     return undefined;
   }
 
-  private async post(endpoint: string, body: object) {
+  private post = async (endpoint: string, body: object) => {
     return await fetch(`${this.hostURL}${endpoint}`, {
       body: JSON.stringify(body),
       headers: {
@@ -92,7 +92,7 @@ export class LightbotAPI {
       },
       method: "POST",
     });
-  }
+  };
 
   private async get(endpoint: string) {
     return await fetch(`${this.hostURL}${endpoint}`);

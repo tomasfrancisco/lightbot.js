@@ -6,7 +6,7 @@ export declare class LightbotAPI {
     /**
      * Initializes a new bot conversation
      */
-    postStartConversation(): Promise<APIMessage[] | undefined>;
+    postStartConversation: () => Promise<APIMessage[] | undefined>;
     /**
      * Gets agent data, e.g. theme, logo, etc.
      */

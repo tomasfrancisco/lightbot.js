@@ -6,24 +6,24 @@ export type Message = APIMessage & {
   sender: "human" | "bot" | "supporter";
 };
 
-export type MessageListenerHandler = (messages: Message[]) => void;
+export type UpdateListenerHandler = () => void;
 
 export interface LightbotMessengerProps {
   hostURL: string;
   agentId: string;
-  messageListener?: MessageListenerHandler;
+  updateListener?: UpdateListenerHandler;
 }
 
 export class LightbotMessenger {
   private stateManager: StateManager;
   private apiClient: LightbotAPI;
-  private messageListener?: MessageListenerHandler;
+  private updateListener?: UpdateListenerHandler;
 
-  constructor({ hostURL, agentId, messageListener }: LightbotMessengerProps) {
+  constructor({ hostURL, agentId, updateListener: messageListener }: LightbotMessengerProps) {
     this.stateManager = new StateManager();
     this.apiClient = new LightbotAPI(hostURL, agentId);
     if (messageListener) {
-      this.messageListener = messageListener;
+      this.updateListener = messageListener;
     }
   }
 
@@ -31,7 +31,7 @@ export class LightbotMessenger {
    * It will set the messenger state as open and initialize conversation
    * in case it's needed.
    */
-  public async toggleMessenger(): Promise<void> {
+  public toggleMessenger = async (): Promise<void> => {
     if (!this.stateManager.agent.isInitialized) {
       await this.initMessenger();
       await this.stateManager.updateAgent({ isInitialized: true });
@@ -40,13 +40,19 @@ export class LightbotMessenger {
     this.stateManager.updateLayout({
       isMessengerOpen: !this.stateManager.layout.isMessengerOpen,
     });
-  }
+
+    this.pushUpdate();
+  };
 
   public get isOpen() {
     return this.stateManager.layout.isMessengerOpen;
   }
 
-  public async sendMessage(message: Message): Promise<void> {
+  public get messages() {
+    return this.stateManager.messages;
+  }
+
+  public sendMessage = async (message: Message): Promise<void> => {
     try {
       let messagesResponse: APIMessage[] | undefined;
       if (message.type === "jump") {
@@ -67,18 +73,18 @@ export class LightbotMessenger {
     } catch (err) {
       throw new Error("An error occurred sending a message.");
     }
-  }
+  };
 
   /**
    * Notifies the subscriber with the updated messages
    */
   private pushUpdate() {
-    if (this.messageListener) {
-      this.messageListener(this.stateManager.messages);
+    if (this.updateListener) {
+      this.updateListener();
     }
   }
 
-  private async initMessenger() {
+  private initMessenger = async () => {
     try {
       const messagesResponse = await this.apiClient.postStartConversation();
       if (messagesResponse) {
@@ -94,5 +100,5 @@ export class LightbotMessenger {
     } catch (err) {
       throw new Error("An error occurred initializing messenger.");
     }
-  }
+  };
 }
