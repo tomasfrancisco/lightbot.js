@@ -1,1 +1,1 @@
-export * from "./messengerDecorator";
+export * from "./withLightbotMessenger";
