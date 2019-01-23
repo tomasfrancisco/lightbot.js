@@ -8,7 +8,7 @@ Lightbot.js is a client javascript SDK
 ## Example
 
 ```typescript
-import LightbotMessenger from "lightbot";
+import { LightbotMessenger } from "lightbot";
 
 const lightbotMessenger = new LightbotMessenger({
   hostURL: "http://localhost:9000",
@@ -26,8 +26,44 @@ lightbotMessenger.sendMessage({
 
 ## API Reference
 
-| Property        | Description                   | Type                       |
-|:----------------|:------------------------------|:---------------------------|
-| sendMessage     | Send a message to the service | Function(message: Message) |
-| toggleMessenger | Toggle messenger open state   | Function()                 |
-| isOpen          | Current open state            | Boolean                    |
+| Property        | Description                                     | Type                             |
+|-----------------|-------------------------------------------------|----------------------------------|
+| messages        | Message history                                 | Message                          |
+| sendMessage     | Send a message to the service                   | Function(message: Message): void |
+| toggleMessenger | Toggle messenger open state                     | Function()                       |
+| isOpen          | Current open state                              | Boolean                          |
+| onChange        | Called when any primitive property gets updated | Function(): void                 |
+
+## Using `withLightbotMessenger` React HOC
+
+Lightbot.js exports a React HOC which can be used to provide a communication interface to your React components.
+
+```js
+import {
+  LightbotMessage,
+  LightbotMessengerDecoratedProps,
+  withLightbotMessenger
+} from "lightbot/lib/lightbot-react";
+
+class AppDisconnected extends Component {
+  render() {
+    const { messages, sendMessage } = this.props;
+    return (
+      <Chat
+        messages={messages}
+        onMessageSend={sendMessage}
+      />
+    );
+  }
+}
+
+export const App = withLightbotMessenger<AppProps>({
+  hostURL: "https://localhost:9000,
+  agentId: "agent-id"
+})(AppDisconnected);
+
+```
+
+### Injected props
+
+`withLightbotMessenger` injects the same props as the one defined by the [Lightbot API](#API-Reference) except the onChange is implemented in order to update your React components when any update is available.

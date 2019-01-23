@@ -2,11 +2,11 @@ import { APIMessage } from "./api.types";
 export declare type LightbotMessage = APIMessage & {
     sender: "human" | "bot" | "supporter";
 };
-export declare type UpdateListenerHandler = () => void;
+export declare type OnChangeHandler = () => void;
 export interface LightbotMessengerProps {
     hostURL: string;
     agentId: string;
-    onChange?: UpdateListenerHandler;
+    onChange?: OnChangeHandler;
 }
 export declare class LightbotMessenger {
     private stateManager;

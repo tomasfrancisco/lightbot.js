@@ -8,18 +8,18 @@ export type LightbotMessage = APIMessage & {
   sender: "human" | "bot" | "supporter";
 };
 
-export type UpdateListenerHandler = () => void;
+export type OnChangeHandler = () => void;
 
 export interface LightbotMessengerProps {
   hostURL: string;
   agentId: string;
-  onChange?: UpdateListenerHandler;
+  onChange?: OnChangeHandler;
 }
 
 export class LightbotMessenger {
   private stateManager: StateManager;
   private apiClient: LightbotAPI;
-  private onChange?: UpdateListenerHandler;
+  private onChange?: OnChangeHandler;
 
   constructor({ hostURL, agentId, onChange }: LightbotMessengerProps) {
     this.stateManager = new StateManager();
