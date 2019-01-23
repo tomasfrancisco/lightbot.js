@@ -1,5 +1,5 @@
-import { APIAgentData } from "api.types";
-import { Message } from "./messenger";
+import { APIAgentData } from "lightbot-js/api.types";
+import { LightbotMessage } from "./messenger";
 export interface LayoutState {
     isMessengerOpen?: boolean;
     [propName: string]: any;
@@ -14,7 +14,7 @@ export declare type AgentState = APIAgentData & {
  */
 interface StoreState {
     isLocalStorageAvailable?: boolean;
-    messages: Message[];
+    messages: LightbotMessage[];
     agent: AgentState;
     layout: LayoutState;
 }
@@ -31,19 +31,18 @@ declare type StoreKeys = {
  */
 export declare class StateManager {
     static keys: StoreKeys;
-    private static salt;
     private static getKey;
     private state;
     constructor();
-    saveMessages(messages: Message[]): void;
-    popMessage(): (import("./api.types").APIPlainMessage & {
+    saveMessages(messages: LightbotMessage[], callback?: () => void): void;
+    popMessage(callback?: () => void): (import("./api.types").APIPlainMessage & {
         sender: "human" | "bot" | "supporter";
     }) | (import("./api.types").APILinkMessage & {
         sender: "human" | "bot" | "supporter";
     }) | (import("./api.types").APIJumpMessage & {
         sender: "human" | "bot" | "supporter";
     }) | undefined;
-    readonly messages: Message[];
+    readonly messages: LightbotMessage[];
     /**
      * Interface to override existing or create new layout property values
      * @param layout Overrides to layout store

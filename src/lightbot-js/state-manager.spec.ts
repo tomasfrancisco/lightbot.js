@@ -1,4 +1,4 @@
-import { Message } from "./messenger";
+import { LightbotMessage } from "./messenger";
 import { AgentState, LayoutState, StateManager } from "./state-manager";
 
 describe("StateManager", () => {
@@ -15,7 +15,7 @@ describe("StateManager", () => {
       });
 
       it("adds new message when message is saved", () => {
-        const message: Message = { sender: "human", label: "test message", type: "plain" };
+        const message: LightbotMessage = { sender: "human", label: "test message", type: "plain" };
         stateManager.saveMessages([message]);
 
         expect(stateManager.messages[0]).toMatchObject(message);
@@ -63,7 +63,7 @@ describe("StateManager", () => {
     });
 
     describe("constructor when existing localStorage", () => {
-      let initialMessages: Message[];
+      let initialMessages: LightbotMessage[];
       let initialLayout: LayoutState;
       let initialAgent: AgentState;
       let stateManager: StateManager;
@@ -99,7 +99,7 @@ describe("StateManager", () => {
       });
 
       it("adds new message when message is saved", () => {
-        const message: Message = { sender: "human", label: "test message", type: "plain" };
+        const message: LightbotMessage = { sender: "human", label: "test message", type: "plain" };
         stateManager.saveMessages([message]);
 
         expect(stateManager.messages[0]).toMatchObject(message);

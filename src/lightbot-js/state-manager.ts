@@ -1,6 +1,6 @@
-import { APIAgentData } from "api.types";
+import { APIAgentData } from "lightbot-js/api.types";
 
-import { Message } from "./messenger";
+import { LightbotMessage } from "./messenger";
 
 export interface LayoutState {
   isMessengerOpen?: boolean;
@@ -18,7 +18,7 @@ export type AgentState = APIAgentData & {
  */
 interface StoreState {
   isLocalStorageAvailable?: boolean;
-  messages: Message[];
+  messages: LightbotMessage[];
   agent: AgentState;
   layout: LayoutState;
 }
@@ -39,10 +39,8 @@ export class StateManager {
     layout: StateManager.getKey("layout"),
     messages: StateManager.getKey("messages"),
   };
-
-  private static salt = "19Hgw012xn!@";
   private static getKey(value: keyof StoreState) {
-    return `${StateManager.salt}${value}`;
+    return `"19Hgw012xn!@"${value}`;
   }
 
   private state: StoreState = {
@@ -61,15 +59,20 @@ export class StateManager {
     this.initAgentState();
   }
 
-  public saveMessages(messages: Message[]) {
+  public saveMessages(messages: LightbotMessage[], callback?: () => void) {
     this.state.messages = this.state.messages.concat(messages);
     this.updateMessagesStorage();
+    if (callback) {
+      callback();
+    }
   }
 
-  public popMessage() {
+  public popMessage(callback?: () => void) {
     const message = this.state.messages.pop();
     this.updateMessagesStorage();
-
+    if (callback) {
+      callback();
+    }
     return message;
   }
 

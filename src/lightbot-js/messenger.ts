@@ -1,8 +1,10 @@
+import uuid from "uuid/v4";
+
 import { LightbotAPI } from "./api";
 import { APIMessage } from "./api.types";
 import { StateManager } from "./state-manager";
 
-export type Message = APIMessage & {
+export type LightbotMessage = APIMessage & {
   sender: "human" | "bot" | "supporter";
 };
 
@@ -11,19 +13,19 @@ export type UpdateListenerHandler = () => void;
 export interface LightbotMessengerProps {
   hostURL: string;
   agentId: string;
-  updateListener?: UpdateListenerHandler;
+  onChange?: UpdateListenerHandler;
 }
 
 export class LightbotMessenger {
   private stateManager: StateManager;
   private apiClient: LightbotAPI;
-  private updateListener?: UpdateListenerHandler;
+  private onChange?: UpdateListenerHandler;
 
-  constructor({ hostURL, agentId, updateListener: messageListener }: LightbotMessengerProps) {
+  constructor({ hostURL, agentId, onChange }: LightbotMessengerProps) {
     this.stateManager = new StateManager();
-    this.apiClient = new LightbotAPI(hostURL, agentId);
-    if (messageListener) {
-      this.updateListener = messageListener;
+    this.apiClient = new LightbotAPI(hostURL, agentId, uuid(), uuid());
+    if (onChange) {
+      this.onChange = onChange;
     }
   }
 
@@ -33,8 +35,8 @@ export class LightbotMessenger {
    */
   public toggleMessenger = async (): Promise<void> => {
     if (!this.stateManager.agent.isInitialized) {
-      await this.initMessenger();
-      await this.stateManager.updateAgent({ isInitialized: true });
+      const isInitialized = await this.initMessenger();
+      await this.stateManager.updateAgent({ isInitialized });
     }
 
     this.stateManager.updateLayout({
@@ -52,7 +54,9 @@ export class LightbotMessenger {
     return this.stateManager.messages;
   }
 
-  public sendMessage = async (message: Message): Promise<void> => {
+  public sendMessage = async (message: LightbotMessage): Promise<void> => {
+    this.stateManager.saveMessages([message], this.pushUpdate);
+
     try {
       let messagesResponse: APIMessage[] | undefined;
       if (message.type === "jump") {
@@ -60,17 +64,19 @@ export class LightbotMessenger {
       } else {
         messagesResponse = await this.apiClient.postMessage(message.label);
       }
+
       if (messagesResponse) {
-        const messages: Message[] = messagesResponse.map<Message>(messageResponse => ({
-          ...messageResponse,
-          sender: "bot",
-        }));
+        const messages: LightbotMessage[] = messagesResponse.map<LightbotMessage>(
+          messageResponse => ({
+            ...messageResponse,
+            sender: "bot",
+          }),
+        );
 
-        this.stateManager.saveMessages(messages);
-
-        this.pushUpdate();
+        this.stateManager.saveMessages(messages, this.pushUpdate);
       }
     } catch (err) {
+      this.stateManager.popMessage(this.pushUpdate);
       throw new Error("An error occurred sending a message.");
     }
   };
@@ -78,27 +84,33 @@ export class LightbotMessenger {
   /**
    * Notifies the subscriber with the updated messages
    */
-  private pushUpdate() {
-    if (this.updateListener) {
-      this.updateListener();
+  private pushUpdate = () => {
+    if (this.onChange) {
+      setTimeout(this.onChange, 0);
     }
-  }
+  };
 
-  private initMessenger = async () => {
+  private initMessenger = async (): Promise<boolean> => {
     try {
       const messagesResponse = await this.apiClient.postStartConversation();
       if (messagesResponse) {
-        const messages: Message[] = messagesResponse.map<Message>(message => ({
+        const messages: LightbotMessage[] = messagesResponse.map<LightbotMessage>(message => ({
           ...message,
           sender: "bot",
         }));
 
-        this.stateManager.saveMessages(messages);
-
-        this.pushUpdate();
+        this.stateManager.saveMessages(messages, this.pushUpdate);
       }
+
+      const agentData = await this.apiClient.getAgentData();
+      if (agentData && typeof agentData === "object") {
+        this.stateManager.updateAgent(agentData);
+      }
+
+      return true;
     } catch (err) {
-      throw new Error("An error occurred initializing messenger.");
+      console.warn("An error occurred initializing messenger.");
     }
+    return false;
   };
 }

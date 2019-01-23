@@ -15,6 +15,7 @@
     "outDir": "./lib",
     "rootDir": "./src",
     "baseUrl": "src",
+    "jsx": "react",
     "declaration": true,
     "allowSyntheticDefaultImports": true
   },

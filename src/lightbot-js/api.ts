@@ -3,7 +3,12 @@ import { fetch } from "cross-fetch";
 import { APIAgentData, APIMessage } from "./api.types";
 
 export class LightbotAPI {
-  constructor(private hostURL: string, private agentId: string) {}
+  constructor(
+    private hostURL: string,
+    private agentId: string,
+    private sessionId: string,
+    private userId: string,
+  ) {}
 
   /**
    * Initializes a new bot conversation
@@ -12,10 +17,11 @@ export class LightbotAPI {
     try {
       const response = await this.post("/start", {
         lightbot_agent_id: this.agentId,
+        session_id: this.sessionId,
       });
       const body = await response.json();
-      if (body.data && body.data.bot) {
-        return body.data.bot as APIMessage[];
+      if (body && body.bot) {
+        return body.bot as APIMessage[];
       }
     } catch (err) {
       throw new Error("An error occurred while starting conversation.");
@@ -31,8 +37,8 @@ export class LightbotAPI {
       const response = await this.get(`/agent-data?lightbot_agent_id=${this.agentId}`);
 
       const body = await response.json();
-      if (body.data) {
-        return body.data as APIAgentData;
+      if (body) {
+        return body as APIAgentData;
       }
     } catch (err) {
       throw new Error("An error occurred while fetching agent data.");
@@ -50,11 +56,13 @@ export class LightbotAPI {
       const response = await this.post("", {
         human: message,
         lightbot_agent_id: this.agentId,
+        session_id: this.sessionId,
+        user_id: this.userId,
       });
 
       const body = await response.json();
-      if (body.data && body.data.bot) {
-        return body.data.bot as APIMessage[];
+      if (body && body.bot) {
+        return body.bot as APIMessage[];
       }
     } catch (err) {
       throw new Error("An error occurred while sending a message.");
@@ -71,11 +79,13 @@ export class LightbotAPI {
       const response = await this.post("/jump", {
         jump,
         lightbot_agent_id: this.agentId,
+        session_id: this.sessionId,
+        user_id: this.userId,
       });
 
       const body = await response.json();
-      if (body.data && body.data.bot) {
-        return body.data.bot as APIMessage[];
+      if (body && body.bot) {
+        return body.bot as APIMessage[];
       }
     } catch (err) {
       throw new Error("An error occured while sending a jump.");

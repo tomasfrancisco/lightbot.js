@@ -2,7 +2,9 @@ import { APIAgentData, APIMessage } from "./api.types";
 export declare class LightbotAPI {
     private hostURL;
     private agentId;
-    constructor(hostURL: string, agentId: string);
+    private sessionId;
+    private userId;
+    constructor(hostURL: string, agentId: string, sessionId: string, userId: string);
     /**
      * Initializes a new bot conversation
      */
