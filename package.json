@@ -1,5 +1,5 @@
 {
-  "name": "lightbot",
+  "name": "@lightbase/lightbot",
   "version": "1.0.0",
   "description": "Javascript Client for Lightbot API",
   "main": "lib/lightbot-js/index.js",
