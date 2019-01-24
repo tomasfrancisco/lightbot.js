@@ -58,11 +58,15 @@ class AppDisconnected extends Component {
 }
 
 export const App = withLightbotMessenger<AppProps>({
-  hostURL: "https://localhost:9000,
+  hostURL: "https://localhost:9000",
   agentId: "agent-id"
 })(AppDisconnected);
 
 ```
+
+### Live Example
+
+[![Edit ⚡️Lightbot Chat Widget Example](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/94wwqz6lxp)
 
 ### Injected props
 
