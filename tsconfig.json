@@ -19,5 +19,5 @@
     "declaration": true,
     "allowSyntheticDefaultImports": true
   },
-  "exclude": ["node_modules", "lib"]
+  "exclude": ["node_modules", "lib", "**/*.spec.tsx", "**/*.spec.ts"]
 }

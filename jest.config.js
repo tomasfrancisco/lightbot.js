@@ -8,6 +8,6 @@ module.exports = {
   testEnvironment: "node",
   moduleDirectories: ["node_modules", "src"],
   moduleFileExtensions: ["ts", "js", "tsx"],
-  collectCoverageFrom: ["**/*.{ts, tsx}"],
+  collectCoverageFrom: ["**/*.ts", "**/*.tsx"],
   setupFilesAfterEnv: ["<rootDir>/src/setup-tests.js"],
 };

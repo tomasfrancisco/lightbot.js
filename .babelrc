@@ -11,10 +11,15 @@
       }
     ]
   ],
-  "only": ["src/**"],
   "plugins": [
     "@babel/plugin-transform-typescript",
     "@babel/plugin-proposal-class-properties",
     "@babel/plugin-transform-classes"
-  ]
+  ],
+  "env": {
+    "production": {
+      "comments": false,
+      "ignore": ["src/**/*.spec.ts", "src/**/*.spec.tsx"]
+    }
+  }
 }
