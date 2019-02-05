@@ -5,6 +5,7 @@
     "no-empty-interface": false,
     "arrow-parens": false,
     "no-console": false,
-    "semicolon": [true, "ignore-bound-class-methods"]
+    "semicolon": [true, "ignore-bound-class-methods"],
+    "interface-over-type-literal": false
   }
 }

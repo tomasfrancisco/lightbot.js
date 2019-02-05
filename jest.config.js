@@ -1,12 +1,13 @@
 module.exports = {
   coverageDirectory: "<rootDir>/coverage",
-  testRegex: "((\\.|/)(test|spec))\\.ts$",
+  testRegex: "((\\.|/)(test|spec))\\.tsx?$",
   transform: {
-    "^.+\\.ts$": "babel-jest",
+    "^.+\\.tsx?$": "ts-jest",
+    "^.+\\.js$": "babel-jest",
   },
   testEnvironment: "node",
-  // setupFiles: ["jest-localstorage-mock"],
   moduleDirectories: ["node_modules", "src"],
-  moduleFileExtensions: ["ts", "js"],
-  collectCoverageFrom: ["src/**/*.{ts}"],
+  moduleFileExtensions: ["ts", "js", "tsx"],
+  collectCoverageFrom: ["**/*.{ts, tsx}"],
+  setupFilesAfterEnv: ["<rootDir>/src/setup-tests.js"],
 };

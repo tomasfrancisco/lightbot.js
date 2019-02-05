@@ -1,12 +1,14 @@
-import uuid from "uuid/v4";
+import * as uuid from "uuid/v4";
 
 import { LightbotAPI } from "./api";
 import { APIMessage } from "./api.types";
 import { StateManager } from "./state-manager";
 
 export type LightbotMessage = APIMessage & {
-  sender: "human" | "bot" | "supporter";
+  sender: "bot" | "human";
 };
+
+export type Message = APIMessage;
 
 export type OnChangeHandler = () => void;
 
@@ -23,22 +25,52 @@ export class LightbotMessenger {
 
   constructor({ hostURL, agentId, onChange }: LightbotMessengerProps) {
     this.stateManager = new StateManager();
-    this.apiClient = new LightbotAPI(hostURL, agentId, uuid(), uuid());
+    this.apiClient = new LightbotAPI(
+      hostURL,
+      agentId,
+      // TODO: Remove when backend gets rid of session and user ids
+      uuid(),
+      // TODO: Remove when backend gets rid of session and user ids
+      uuid(),
+    );
     if (onChange) {
       this.onChange = onChange;
     }
   }
 
-  /**
-   * It will set the messenger state as open and initialize conversation
-   * in case it's needed.
-   */
-  public toggleMessenger = async (): Promise<void> => {
-    if (!this.stateManager.agent.isInitialized) {
-      const isInitialized = await this.initMessenger();
-      await this.stateManager.updateAgent({ isInitialized });
+  public startMessenger = async () => {
+    if (this.stateManager.layout.isMessengerOpen) {
+      console.warn("Lightbot messenger cannot be initialized more than once.");
     }
 
+    try {
+      const messagesResponse = await this.apiClient.postStartMessenger();
+      if (messagesResponse) {
+        const messages: LightbotMessage[] = messagesResponse.map<LightbotMessage>(message => ({
+          ...message,
+          sender: "bot",
+        }));
+
+        this.stateManager.saveMessages(messages, this.pushUpdate);
+      }
+
+      const agentData = await this.apiClient.getAgentData();
+      if (agentData && typeof agentData === "object") {
+        this.stateManager.updateAgent(agentData);
+      }
+
+      await this.stateManager.updateAgent({ isInitialized: true });
+    } catch (err) {
+      console.warn("An error occurred initializing messenger.");
+    }
+
+    await this.stateManager.updateAgent({ isInitialized: true });
+  };
+
+  /**
+   * It will set the UI messenger state (Open or Close)
+   */
+  public toggleMessenger = async (): Promise<void> => {
     this.stateManager.updateLayout({
       isMessengerOpen: !this.stateManager.layout.isMessengerOpen,
     });
@@ -54,8 +86,14 @@ export class LightbotMessenger {
     return this.stateManager.messages;
   }
 
-  public sendMessage = async (message: LightbotMessage): Promise<void> => {
-    this.stateManager.saveMessages([message], this.pushUpdate);
+  public sendMessage = async (message: Message): Promise<void> => {
+    if (!this.stateManager.agent.isInitialized) {
+      throw new Error(
+        "Lightbot messenger was not initialized. Please call startMessenger() first.",
+      );
+    }
+
+    this.stateManager.saveMessages([{ ...message, sender: "human" }], this.pushUpdate);
 
     try {
       let messagesResponse: APIMessage[] | undefined;
@@ -88,29 +126,5 @@ export class LightbotMessenger {
     if (this.onChange) {
       setTimeout(this.onChange, 0);
     }
-  };
-
-  private initMessenger = async (): Promise<boolean> => {
-    try {
-      const messagesResponse = await this.apiClient.postStartConversation();
-      if (messagesResponse) {
-        const messages: LightbotMessage[] = messagesResponse.map<LightbotMessage>(message => ({
-          ...message,
-          sender: "bot",
-        }));
-
-        this.stateManager.saveMessages(messages, this.pushUpdate);
-      }
-
-      const agentData = await this.apiClient.getAgentData();
-      if (agentData && typeof agentData === "object") {
-        this.stateManager.updateAgent(agentData);
-      }
-
-      return true;
-    } catch (err) {
-      console.warn("An error occurred initializing messenger.");
-    }
-    return false;
   };
 }

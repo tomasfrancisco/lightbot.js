@@ -1,17 +1,20 @@
-export type MessageTypeEnum = "plain" | "link" | "jump" | "decorated";
+export type MessageTypeEnum = "plain" | "link" | "jump";
 
 interface IMessage {
   type: MessageTypeEnum;
+}
+
+export interface APIPlainMessage extends IMessage {
   label: string;
 }
 
-export interface APIPlainMessage extends IMessage {}
-
 export interface APILinkMessage extends IMessage {
+  label: string;
   link: string;
 }
 
 export interface APIJumpMessage extends IMessage {
+  label: string;
   jumps: Array<{
     label: string;
     event: string;

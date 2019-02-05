@@ -1,0 +1,23 @@
+container:
+  image: node:10.10
+  cpu: 4
+  memory: 4G
+
+build_task:
+  node_modules_cache:
+    folder: node_modules_cache
+    fingerprint_script: cat package-lock.json
+    populate_script: npm install
+
+  build_script:
+    - npm run build
+
+test_task:
+  node_modules_cache:
+    folder: node_modules_cache
+    fingerprint_script: cat package-lock.json
+    populate_script: npm install
+
+  test_script:
+    - npm run prettier
+    - npm run test:coverage

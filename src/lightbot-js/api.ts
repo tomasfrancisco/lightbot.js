@@ -12,8 +12,9 @@ export class LightbotAPI {
 
   /**
    * Initializes a new bot conversation
+   * Expects an APIMessage with a welcome message
    */
-  public postStartConversation = async (): Promise<APIMessage[] | undefined> => {
+  public postStartMessenger = async (): Promise<APIMessage[] | undefined> => {
     try {
       const response = await this.post("/start", {
         lightbot_agent_id: this.agentId,

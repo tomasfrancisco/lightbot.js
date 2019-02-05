@@ -1,6 +1,6 @@
 {
   "name": "@lightbase/lightbot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Javascript Client for Lightbot API",
   "main": "lib/lightbot-js/index.js",
   "scripts": {
@@ -9,13 +9,9 @@
     "build:types": "tsc --emitDeclarationOnly",
     "test": "jest",
     "test:watch": "jest --watch --coverage",
-    "test:coverage": "jest --coverage"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn build && git add lib/*",
-      "pre-push": "yarn test"
-    }
+    "test:coverage": "jest --coverage",
+    "prettier": "prettier --config .prettierrc -l 'src/**/**.{js, ts, tsx}'",
+    "publish": "rm -rf node_modules && npm install && npm config set scope lightbase && npm publish --access public "
   },
   "repository": {
     "type": "git",
@@ -40,17 +36,21 @@
     "@babel/preset-env": "^7.2.3",
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.1.0",
-    "@types/jest": "^23.3.12",
+    "@types/enzyme": "^3.1.16",
+    "@types/jest": "^23.3.13",
     "@types/node": "^10.12.18",
     "@types/react": "^16.7.20",
     "@types/uuid": "^3.4.4",
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
     "babel-loader": "^8.0.5",
-    "husky": "^1.3.1",
-    "jest": "^23.6.0",
+    "enzyme": "^3.8.0",
+    "enzyme-adapter-react-16": "^1.8.0",
+    "jest": "^24.0.0",
     "jest-localstorage-mock": "^2.4.0",
+    "prettier": "^1.16.4",
     "react": "^16.7.0",
+    "react-dom": "^16.7.0",
     "regenerator-runtime": "^0.13.1",
     "source-map-loader": "^0.2.4",
     "ts-jest": "^23.10.5",

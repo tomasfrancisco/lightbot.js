@@ -26,17 +26,52 @@ lightbotMessenger.sendMessage({
 
 ## API Reference
 
-| Property        | Description                                     | Type                             |
-|-----------------|-------------------------------------------------|----------------------------------|
-| messages        | Message history                                 | Message                          |
-| sendMessage     | Send a message to the service                   | Function(message: Message): void |
-| toggleMessenger | Toggle messenger open state                     | Function()                       |
-| isOpen          | Current open state                              | Boolean                          |
-| onChange        | Called when any primitive property gets updated | Function(): void                 |
+| Property        | Description                                                                                                                                  | Type                             |
+|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------|
+| messages        | Message history                                                                                                                              | Message                          |
+| startMessenger  | Initializes the messenger and adds its welcome message to `messages`. NOTE: It doesn't do anything if the messenger was already initialized. | Function(void): void             |
+| sendMessage     | Sends a message to the bot                                                                                                                   | Function(message: Message): void |
+| toggleMessenger | Toggles messenger open state                                                                                                                 | Function()                       |
+| isOpen          | Current open state                                                                                                                           | Boolean                          |
+| onChange        | Called when any primitive property gets updated                                                                                              | Function(): void                 |
 
-## Using `withLightbotMessenger` React HOC
+## Message Type
 
-Lightbot.js exports a React HOC which can be used to provide a communication interface to your React components.
+| Property | Description                   | Value                         |
+|----------|-------------------------------|-------------------------------|
+| sender   | Message sender identification | `"bot" \| "human"`            |
+| type     | Type of message               | `"plain" \| "link" \| "jump"` |
+
+when `type: "plain"`:
+
+| Property | Description        | Type   |
+|----------|--------------------|--------|
+| label    | Plain text message | string |
+
+when `type: "link"`:
+
+| Property | Description               | Type   |
+|----------|---------------------------|--------|
+| label    | Representative link label | string |
+| link     | link                      | string |
+
+when `type: "jump"`:
+
+| Property | Description               | Type                                     |
+|----------|---------------------------|------------------------------------------|
+| label    | Representative jump label | string                                   |
+| jumps    | link                      | Array<{ label: string; event: string; }> |
+
+
+## `withLightbotMessenger` HOC
+
+Lightbot.js provides a React HOC which can be used to provide a communication interface to your React components.
+
+`withLightbotMessenger<ComponentProps>(options: { agentId: string; hostURL: string; })(Component)`
+
+### How to use
+
+React components are exported from `lib/lightbot-react`.
 
 ```js
 import {
@@ -45,15 +80,32 @@ import {
   withLightbotMessenger
 } from "lightbot/lib/lightbot-react";
 
-class AppDisconnected extends Component {
-  render() {
-    const { messages, sendMessage } = this.props;
+type AppProps = LightbotMessengerDecoratedProps & {
+  children: any;
+}
+
+class AppDisconnected extends Component<AppProps, {}> {
+  public render() {
+    const { messages, isMessengerOpen, toggleMessenger } = this.props;
     return (
-      <Chat
-        messages={messages}
-        onMessageSend={sendMessage}
-      />
+      <>
+        {
+          isMessengerOpen ? 
+          (<ChatWindow
+            messages={messages}
+            onMessageSend={this.sendMessage}
+          />) : 
+          null
+        }
+        <button onClick={toggleMessenger}>
+          {isMessengerOpen ? "close" : "open"}
+        </button>
+      </>
     );
+  }
+
+  private sendMessage = (message: string) => {
+    this.props.sendMessage({ type: "plain", label: message });
   }
 }
 

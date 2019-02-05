@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`messenger when not initialized throws when sending message 1`] = `"Lightbot messenger was not initialized. Please call startMessenger() first."`;

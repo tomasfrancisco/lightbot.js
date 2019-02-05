@@ -1,18 +1,13 @@
 import * as React from "react";
-import { LightbotMessage, LightbotMessenger } from "../lightbot-js";
-export { LightbotMessage } from "../lightbot-js";
+
+import { LightbotMessenger } from "../lightbot-js";
 
 export interface LightbotMessengerProps {
   hostURL: string;
   agentId: string;
 }
 
-export interface LightbotMessengerDecoratedProps {
-  messages: LightbotMessage[];
-  isMessengerOpen: boolean;
-  sendMessage(message: LightbotMessage): void;
-  toggleMessenger(): void;
-}
+export interface LightbotMessengerDecoratedProps extends LightbotMessenger {}
 
 export function withLightbotMessenger<C extends LightbotMessengerDecoratedProps>(
   messengerProps: LightbotMessengerProps,
@@ -38,6 +33,7 @@ export function withLightbotMessenger<C extends LightbotMessengerDecoratedProps>
         return (
           <Component
             {...this.props as C}
+            startMessenger={this.messenger.startMessenger}
             isMessengerOpen={this.messenger.isOpen}
             messages={this.messenger.messages}
             sendMessage={this.messenger.sendMessage}

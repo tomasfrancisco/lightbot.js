@@ -4,7 +4,8 @@ import { AgentState, LayoutState, StateManager } from "./state-manager";
 describe("StateManager", () => {
   describe("localStorage unavailable", () => {
     it("not throw any error on constructor", () => {
-      expect(new StateManager()).toThrowErrorMatchingSnapshot();
+      const call = () => new StateManager();
+      expect(call).not.toThrow();
     });
 
     describe("messages", () => {
