@@ -1,6 +1,8 @@
 import * as React from "react";
 
-import { LightbotMessenger } from "../lightbot-js";
+import { LightbotMessage, LightbotMessenger } from "../lightbot-js";
+
+export { LightbotMessage };
 
 export interface LightbotMessengerProps {
   hostURL: string;
@@ -33,8 +35,7 @@ export function withLightbotMessenger<C extends LightbotMessengerDecoratedProps>
         return (
           <Component
             {...this.props as C}
-            startMessenger={this.messenger.startMessenger}
-            isMessengerOpen={this.messenger.isOpen}
+            isMessengerOpen={this.messenger.isMessengerOpen}
             messages={this.messenger.messages}
             sendMessage={this.messenger.sendMessage}
             toggleMessenger={this.toggleMessenger}

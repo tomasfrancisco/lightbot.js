@@ -36,36 +36,9 @@ export class LightbotMessenger {
     if (onChange) {
       this.onChange = onChange;
     }
+
+    this.initAgent();
   }
-
-  public startMessenger = async () => {
-    if (this.stateManager.layout.isMessengerOpen) {
-      console.warn("Lightbot messenger cannot be initialized more than once.");
-    }
-
-    try {
-      const messagesResponse = await this.apiClient.postStartMessenger();
-      if (messagesResponse) {
-        const messages: LightbotMessage[] = messagesResponse.map<LightbotMessage>(message => ({
-          ...message,
-          sender: "bot",
-        }));
-
-        this.stateManager.saveMessages(messages, this.pushUpdate);
-      }
-
-      const agentData = await this.apiClient.getAgentData();
-      if (agentData && typeof agentData === "object") {
-        this.stateManager.updateAgent(agentData);
-      }
-
-      await this.stateManager.updateAgent({ isInitialized: true });
-    } catch (err) {
-      console.warn("An error occurred initializing messenger.");
-    }
-
-    await this.stateManager.updateAgent({ isInitialized: true });
-  };
 
   /**
    * It will set the UI messenger state (Open or Close)
@@ -78,11 +51,11 @@ export class LightbotMessenger {
     this.pushUpdate();
   };
 
-  public get isOpen() {
-    return this.stateManager.layout.isMessengerOpen;
+  public get isMessengerOpen(): boolean {
+    return !!this.stateManager.layout.isMessengerOpen;
   }
 
-  public get messages() {
+  public get messages(): LightbotMessage[] {
     return this.stateManager.messages;
   }
 
@@ -117,6 +90,39 @@ export class LightbotMessenger {
       this.stateManager.popMessage(this.pushUpdate);
       throw new Error("An error occurred sending a message.");
     }
+  };
+
+  /**
+   * Triggers an opening message from the bot.
+   */
+  private initAgent = async () => {
+    if (this.stateManager.agent.isInitialized) {
+      console.warn("Lightbot messenger was already initialized.");
+      return;
+    }
+
+    try {
+      const messagesResponse = await this.apiClient.postStartMessenger();
+      if (messagesResponse) {
+        const messages: LightbotMessage[] = messagesResponse.map<LightbotMessage>(message => ({
+          ...message,
+          sender: "bot",
+        }));
+
+        this.stateManager.saveMessages(messages, this.pushUpdate);
+      }
+
+      const agentData = await this.apiClient.getAgentData();
+      if (agentData && typeof agentData === "object") {
+        this.stateManager.updateAgent(agentData);
+      }
+
+      await this.stateManager.updateAgent({ isInitialized: true });
+    } catch (err) {
+      console.warn("An error occurred initializing messenger.");
+    }
+
+    await this.stateManager.updateAgent({ isInitialized: true });
   };
 
   /**
