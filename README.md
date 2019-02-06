@@ -26,14 +26,13 @@ lightbotMessenger.sendMessage({
 
 ## API Reference
 
-| Property        | Description                                                                                                                                  | Type                             |
-|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------|
-| messages        | Message history                                                                                                                              | Message                          |
-| startMessenger  | Initializes the messenger and adds its welcome message to `messages`. NOTE: It doesn't do anything if the messenger was already initialized. | Function(void): void             |
-| sendMessage     | Sends a message to the bot                                                                                                                   | Function(message: Message): void |
-| toggleMessenger | Toggles messenger open state                                                                                                                 | Function()                       |
-| isOpen          | Current open state                                                                                                                           | Boolean                          |
-| onChange        | Called when any primitive property gets updated                                                                                              | Function(): void                 |
+| Property        | Description                                     | Type                             |
+|-----------------|-------------------------------------------------|----------------------------------|
+| messages        | Message history                                 | Message                          |
+| sendMessage     | Sends a message to the bot                      | Function(message: Message): void |
+| toggleMessenger | Toggles messenger open state                    | Function()                       |
+| isMessengerOpen | Current open state                              | Boolean                          |
+| onChange        | Called when any primitive property gets updated | Function(): void                 |
 
 ## Message Type
 
@@ -123,3 +122,7 @@ export const App = withLightbotMessenger<AppProps>({
 ### Injected props
 
 `withLightbotMessenger` injects the same props as the one defined by the [Lightbot API](#API-Reference) except the onChange is implemented in order to update your React components when any update is available.
+
+### License
+
+[Apache-2.0](LICENSE)

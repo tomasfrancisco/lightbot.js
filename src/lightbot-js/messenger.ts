@@ -62,7 +62,10 @@ export class LightbotMessenger {
   public sendMessage = async (message: Message): Promise<void> => {
     if (!this.stateManager.agent.isInitialized) {
       throw new Error(
-        "Lightbot messenger was not initialized. Please call startMessenger() first.",
+        `
+          Lightbot messenger was not initialized.
+          Please refresh the page or make sure LightbotMessenger instance is correctly initialized.
+        `,
       );
     }
 
@@ -123,6 +126,8 @@ export class LightbotMessenger {
     }
 
     await this.stateManager.updateAgent({ isInitialized: true });
+
+    this.pushUpdate();
   };
 
   /**

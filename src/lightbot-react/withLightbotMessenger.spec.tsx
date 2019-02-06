@@ -9,10 +9,23 @@ type TestComponentProps = LightbotMessengerDecoratedProps & {
 };
 
 class TestComponent extends React.Component<TestComponentProps> {
-  public render() {
-    const { children } = this.props;
-    return <span>{children}</span>;
+  public componentWillReceiveProps() {
+    console.log("componentWillReceiveProps");
   }
+
+  public render() {
+    const { children, isMessengerOpen } = this.props;
+    return (
+      <>
+        <span>{children}</span>
+        <button onClick={this.onClick}>{isMessengerOpen.toString()}</button>
+      </>
+    );
+  }
+
+  private onClick = () => {
+    this.props.toggleMessenger();
+  };
 }
 
 describe("withLightbotMessenger", () => {
@@ -42,5 +55,35 @@ describe("withLightbotMessenger", () => {
 
   it("passes the wrapped component props down", () => {
     expect(component.find(TestComponent).props()).toHaveProperty("label", label);
+  });
+
+  it("isMessengerOpen initialized as false", () => {
+    expect(
+      component
+        .find(TestComponent)
+        .dive()
+        .find("button")
+        .text(),
+    ).toBe("false");
+  });
+
+  it("isMessengerOpen gets toggled", () => {
+    component
+      .find(TestComponent)
+      .dive()
+      .find("button")
+      .simulate("click");
+
+    setTimeout(() => {
+      component.update();
+
+      expect(
+        component
+          .find(TestComponent)
+          .dive()
+          .find("button")
+          .text(),
+      ).toBe("true");
+    }, 100);
   });
 });
