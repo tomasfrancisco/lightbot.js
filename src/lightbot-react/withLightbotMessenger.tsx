@@ -39,6 +39,7 @@ export function withLightbotMessenger<C extends LightbotMessengerDecoratedProps>
             messages={this.messenger.messages}
             sendMessage={this.messenger.sendMessage}
             toggleMessenger={this.toggleMessenger}
+            resetAgent={this.messenger.resetAgent}
           />
         );
       }

@@ -5,7 +5,7 @@ module.exports = {
     "^.+\\.tsx?$": "ts-jest",
     "^.+\\.js$": "babel-jest",
   },
-  testEnvironment: "node",
+  testEnvironment: "jsdom",
   moduleDirectories: ["node_modules", "src"],
   moduleFileExtensions: ["ts", "js", "tsx"],
   collectCoverageFrom: ["**/*.ts", "**/*.tsx"],

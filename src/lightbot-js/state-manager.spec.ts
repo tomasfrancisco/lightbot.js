@@ -1,5 +1,5 @@
 import { LightbotMessage } from "./messenger";
-import { AgentState, LayoutState, StateManager } from "./state-manager";
+import { AgentState, initialState, LayoutState, StateManager } from "./state-manager";
 
 describe("StateManager", () => {
   describe("localStorage unavailable", () => {
@@ -53,7 +53,6 @@ describe("StateManager", () => {
 
   describe("localstorage available", () => {
     beforeEach(() => {
-      require("jest-localstorage-mock");
       localStorage.clear();
     });
 
@@ -94,22 +93,24 @@ describe("StateManager", () => {
 
     describe("messages", () => {
       let stateManager: StateManager;
+      const message: LightbotMessage = { sender: "human", label: "test message", type: "plain" };
 
       beforeEach(() => {
         stateManager = new StateManager();
       });
 
       it("adds new message when message is saved", () => {
-        const message: LightbotMessage = { sender: "human", label: "test message", type: "plain" };
         stateManager.saveMessages([message]);
 
-        expect(stateManager.messages[0]).toMatchObject(message);
+        expect(stateManager.messages[stateManager.messages.length - 1]).toMatchObject(message);
       });
 
       it("removes message when it pops", () => {
-        stateManager.popMessage();
+        const previousMessageLength = stateManager.messages.length;
+        const poppedMessage = stateManager.popMessage();
 
-        expect(stateManager.messages[0]).toBeUndefined();
+        expect(stateManager.messages.length).toEqual(previousMessageLength - 1);
+        expect(poppedMessage).toEqual(message);
       });
     });
 
@@ -131,6 +132,44 @@ describe("StateManager", () => {
       it("overrides a property", () => {
         stateManager.updateLayout({ isMessengerOpen: true });
         expect(stateManager.layout.isMessengerOpen).toBeTruthy();
+      });
+    });
+
+    describe("reset state", () => {
+      let stateManager: StateManager;
+
+      const initialMessages: LightbotMessage[] = [
+        { type: "plain", sender: "bot", label: "greeting" },
+        { type: "plain", sender: "human", label: "hello" },
+      ];
+
+      const initialLayout: LayoutState = {
+        isMessengerOpen: true,
+      };
+
+      const initialAgent: AgentState = {
+        id: "agent-id",
+      };
+
+      beforeEach(() => {
+        localStorage.setItem(StateManager.keys.messages, JSON.stringify(initialMessages));
+        localStorage.setItem(StateManager.keys.layout, JSON.stringify(initialLayout));
+        localStorage.setItem(StateManager.keys.agent, JSON.stringify(initialAgent));
+
+        stateManager = new StateManager();
+      });
+
+      it("loads with localStorage", () => {
+        expect(stateManager.messages).toEqual(initialMessages);
+        expect(stateManager.agent).toEqual(initialAgent);
+        expect(stateManager.layout).toEqual(initialLayout);
+      });
+
+      it("resets agent state", () => {
+        stateManager.resetState();
+        expect(stateManager.messages).toEqual(initialState.messages);
+        expect(stateManager.agent).toEqual(initialState.agent);
+        expect(stateManager.layout).toEqual(initialState.layout);
       });
     });
   });

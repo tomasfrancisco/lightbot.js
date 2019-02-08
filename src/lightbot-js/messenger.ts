@@ -95,6 +95,11 @@ export class LightbotMessenger {
     }
   };
 
+  public resetAgent() {
+    this.stateManager.resetState();
+    this.pushUpdate();
+  }
+
   /**
    * Triggers an opening message from the bot.
    */

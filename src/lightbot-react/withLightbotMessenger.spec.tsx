@@ -86,4 +86,26 @@ describe("withLightbotMessenger", () => {
       ).toBe("true");
     }, 100);
   });
+
+  describe("injected props", () => {
+    it("isMessengerOpen is defined", () => {
+      expect(typeof component.find(TestComponent).props().isMessengerOpen).toBe("boolean");
+    });
+
+    it("messages is defined", () => {
+      expect(Array.isArray(component.find(TestComponent).props().messages)).toBeTruthy();
+    });
+
+    it("sendMessage is defined", () => {
+      expect(typeof component.find(TestComponent).props().sendMessage).toBe("function");
+    });
+
+    it("toggleMessenger is defined", () => {
+      expect(typeof component.find(TestComponent).props().toggleMessenger).toBe("function");
+    });
+
+    it("resetAgent is defined", () => {
+      expect(typeof component.find(TestComponent).props().resetAgent).toBe("function");
+    });
+  });
 });

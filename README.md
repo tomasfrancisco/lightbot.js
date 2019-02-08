@@ -26,13 +26,14 @@ lightbotMessenger.sendMessage({
 
 ## API Reference
 
-| Property        | Description                                     | Type                             |
-|-----------------|-------------------------------------------------|----------------------------------|
-| messages        | Message history                                 | Message                          |
-| sendMessage     | Sends a message to the bot                      | Function(message: Message): void |
-| toggleMessenger | Toggles messenger open state                    | Function()                       |
-| isMessengerOpen | Current open state                              | Boolean                          |
-| onChange        | Called when any primitive property gets updated | Function(): void                 |
+| Property        | Description                                                                                            | Type                             |
+|-----------------|--------------------------------------------------------------------------------------------------------|----------------------------------|
+| messages        | Message history                                                                                        | Message                          |
+| sendMessage     | Sends a message to the bot                                                                             | Function(message: Message): void |
+| toggleMessenger | Toggles messenger open state                                                                           | Function()                       |
+| isMessengerOpen | Current open state                                                                                     | Boolean                          |
+| onChange        | Called when any primitive property gets updated                                                        | Function(): void                 |
+| resetAgent      | Resets all in memory and local storage data related to the bot agent. e.g.: messages, agent data, etc. | Function(): void                 |
 
 ## Message Type
 
