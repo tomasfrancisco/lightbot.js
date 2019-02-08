@@ -106,11 +106,13 @@ describe("StateManager", () => {
       });
 
       it("removes message when it pops", () => {
+        stateManager.saveMessages([message]);
+
         const previousMessageLength = stateManager.messages.length;
         const poppedMessage = stateManager.popMessage();
 
-        expect(stateManager.messages.length).toEqual(previousMessageLength - 1);
         expect(poppedMessage).toEqual(message);
+        expect(stateManager.messages.length).toEqual(previousMessageLength - 1);
       });
     });
 
