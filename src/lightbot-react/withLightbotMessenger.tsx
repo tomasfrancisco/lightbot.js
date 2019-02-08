@@ -1,3 +1,4 @@
+import { APIMessage } from "lightbot-js/api.types";
 import * as React from "react";
 
 import { LightbotMessage, LightbotMessenger } from "../lightbot-js";
@@ -37,9 +38,9 @@ export function withLightbotMessenger<C extends LightbotMessengerDecoratedProps>
             {...this.props as C}
             isMessengerOpen={this.messenger.isMessengerOpen}
             messages={this.messenger.messages}
-            sendMessage={this.messenger.sendMessage}
+            sendMessage={this.sendMessage}
             toggleMessenger={this.toggleMessenger}
-            resetAgent={this.messenger.resetAgent}
+            resetAgent={this.resetAgent}
           />
         );
       }
@@ -48,8 +49,15 @@ export function withLightbotMessenger<C extends LightbotMessengerDecoratedProps>
         this.forceUpdate();
       };
 
+      private sendMessage = (message: APIMessage) => {
+        this.messenger.sendMessage(message);
+      };
+
       private toggleMessenger = () => {
         this.messenger.toggleMessenger();
+      };
+      private resetAgent = () => {
+        this.messenger.resetAgent();
       };
     };
 }

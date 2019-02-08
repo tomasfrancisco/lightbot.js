@@ -95,9 +95,9 @@ export class LightbotMessenger {
     }
   };
 
-  public resetAgent = () => {
+  public resetAgent = async () => {
     this.stateManager.resetState();
-    this.pushUpdate();
+    this.initAgent();
   };
 
   /**

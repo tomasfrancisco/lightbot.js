@@ -52,7 +52,7 @@ export class StateManager {
     return `"19Hgw012xn!@"${value}`;
   }
 
-  private state: StoreState = initialState;
+  private readonly state: StoreState = { ...initialState };
 
   constructor() {
     if (!this.testLocalStorage()) {
