@@ -1,6 +1,6 @@
 {
   "name": "@lightbase/lightbot",
-  "version": "1.2.0-rc5",
+  "version": "1.2.0-rc6",
   "description": "Javascript Client for Lightbot API",
   "main": "lib/lightbot-js/index.js",
   "scripts": {
