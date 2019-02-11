@@ -24,7 +24,7 @@ export class LightbotMessenger {
   private onChange?: OnChangeHandler;
 
   constructor({ hostURL, agentId, onChange }: LightbotMessengerProps) {
-    this.stateManager = new StateManager();
+    this.stateManager = new StateManager(agentId);
     this.apiClient = new LightbotAPI(
       hostURL,
       agentId,

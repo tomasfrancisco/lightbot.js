@@ -1,5 +1,6 @@
 import { APIAgentData } from "lightbot-js/api.types";
 
+import { LocalStorage } from "./local-storage";
 import { LightbotMessage } from "./messenger";
 
 export interface LayoutState {
@@ -8,6 +9,7 @@ export interface LayoutState {
 }
 
 export type AgentState = APIAgentData & {
+  agentId: string;
   isInitialized?: boolean;
   [propName: string]: any;
 };
@@ -25,15 +27,16 @@ interface StoreState {
 
 type StoreKeys = { [K in keyof StoreState]: string };
 
-export const initialState: StoreState = {
+export const getInitialState = (agentId: string): StoreState => ({
   agent: {
+    agentId,
     isInitialized: false,
   },
   layout: {
     isMessengerOpen: false,
   },
   messages: [],
-};
+});
 /**
  * State Manager
  * is responsible for keeping messages and bot agent relative data.
@@ -48,28 +51,31 @@ export class StateManager {
     layout: StateManager.getKey("layout"),
     messages: StateManager.getKey("messages"),
   };
+
   private static getKey(value: keyof StoreState) {
     return `"19Hgw012xn!@"${value}`;
   }
 
-  private readonly state: StoreState = { ...initialState };
+  private localStorage: LocalStorage;
 
-  constructor() {
-    if (!this.testLocalStorage()) {
-      console.warn(
-        "An error occurred while initalizing from local storage. LocalStorage is not available",
-      );
-      return;
+  private readonly state: StoreState;
+
+  constructor(private agentId: string) {
+    if (!agentId) {
+      throw new Error("agentId is not defined.");
     }
 
-    this.initMessagesState();
-    this.initLayoutState();
-    this.initAgentState();
+    this.localStorage = new LocalStorage();
+
+    this.state = getInitialState(this.agentId);
+    this.initState();
   }
 
   public saveMessages(messages: LightbotMessage[], callback?: () => void) {
     this.state.messages = this.state.messages.concat(messages);
-    this.updateMessagesStorage();
+    // Update local storage
+    this.localStorage.setItem(StateManager.keys.messages, this.state.messages);
+
     if (callback) {
       callback();
     }
@@ -77,7 +83,9 @@ export class StateManager {
 
   public popMessage(callback?: () => void) {
     const message = this.state.messages.pop();
-    this.updateMessagesStorage();
+    // Update local storage
+    this.localStorage.setItem(StateManager.keys.messages, this.state.messages);
+
     if (callback) {
       callback();
     }
@@ -94,16 +102,18 @@ export class StateManager {
    */
   public updateLayout(layout: LayoutState) {
     this.state.layout = Object.assign({}, this.state.layout, layout);
-    this.updateLayoutStorage();
+    // Update local storage
+    this.localStorage.setItem(StateManager.keys.layout, this.state.layout);
   }
 
   public get layout() {
     return this.state.layout;
   }
 
-  public updateAgent(agent: AgentState) {
+  public updateAgent(agent: Partial<AgentState>) {
     this.state.agent = Object.assign({}, this.state.agent, agent);
-    this.updateAgentStorage();
+    // Update local storage
+    this.localStorage.setItem(StateManager.keys.agent, this.state.agent);
   }
 
   public get agent() {
@@ -116,158 +126,43 @@ export class StateManager {
     this.clearAgentState();
   }
 
-  private initMessagesState() {
-    const messages = localStorage.getItem(StateManager.keys.messages);
-
-    if (!messages) {
-      localStorage.setItem(StateManager.keys.messages, this.serialize(this.state.messages));
-    } else {
-      try {
-        this.state.messages = this.deserialize(messages);
-      } catch (err) {
-        localStorage.setItem(StateManager.keys.messages, this.serialize(this.state.messages));
-        console.warn(
-          "An error occurred while initalizing message storage. The message history was reset",
-        );
-      }
-    }
-  }
-
-  private updateMessagesStorage() {
-    if (!this.state.isLocalStorageAvailable) {
-      return;
-    }
-
-    const messages = localStorage.getItem(StateManager.keys.messages);
-
-    if (!messages) {
-      localStorage.setItem(StateManager.keys.messages, this.serialize(this.state.messages));
-      console.warn(
-        "An error occurred while removing last message. The messages history was reset.",
-      );
-      return;
-    }
-
-    localStorage.setItem(StateManager.keys.messages, this.serialize(this.state.messages));
-  }
-
   private clearMessagesState() {
-    this.state.messages = initialState.messages;
-
-    if (!this.state.isLocalStorageAvailable) {
-      return;
-    }
-
-    localStorage.removeItem(StateManager.keys.messages);
-  }
-
-  private initLayoutState() {
-    const layout = localStorage.getItem(StateManager.keys.layout);
-
-    if (!layout) {
-      localStorage.setItem(StateManager.keys.layout, this.serialize(this.state.layout));
-    } else {
-      try {
-        this.state.layout = this.deserialize(layout);
-      } catch (err) {
-        localStorage.setItem(StateManager.keys.layout, this.serialize(this.state.layout));
-        console.warn("An error occurred while initalizing layout storage. The layout was reset.");
-      }
-    }
-  }
-
-  private updateLayoutStorage() {
-    if (!this.state.isLocalStorageAvailable) {
-      return;
-    }
-
-    const layout = localStorage.getItem(StateManager.keys.layout);
-
-    if (!layout) {
-      localStorage.setItem(StateManager.keys.layout, this.serialize(this.state.layout));
-      console.warn("An error occurred while removing last message. The layout was reset.");
-    }
-
-    localStorage.setItem(StateManager.keys.layout, this.serialize(this.state.layout));
+    this.state.messages = getInitialState(this.agentId).messages;
+    // Update local storage
+    this.localStorage.setItem(StateManager.keys.messages, this.state.messages);
   }
 
   private clearLayoutState() {
-    this.state.layout = initialState.layout;
-
-    if (!this.state.isLocalStorageAvailable) {
-      return;
-    }
-
-    localStorage.removeItem(StateManager.keys.layout);
+    this.state.layout = getInitialState(this.agentId).layout;
+    // Update local storage
+    this.localStorage.setItem(StateManager.keys.layout, this.state.layout);
   }
 
-  private initAgentState() {
-    const agent = localStorage.getItem(StateManager.keys.agent);
+  private initState() {
+    const agent = this.localStorage.getItem<AgentState>(StateManager.keys.agent);
 
     if (!agent) {
-      localStorage.setItem(StateManager.keys.agent, this.serialize(this.state.agent));
+      this.localStorage.setItem(StateManager.keys.agent, this.state.agent);
+      this.localStorage.setItem(StateManager.keys.messages, this.state.messages);
+      this.localStorage.setItem(StateManager.keys.layout, this.state.layout);
     } else {
-      try {
-        this.state.agent = this.deserialize(agent);
-      } catch (err) {
-        localStorage.setItem(StateManager.keys.agent, this.serialize(this.state.agent));
-        console.warn("An error occurred while initalizing agent storage. The agent was reset");
+      if (this.agentId && agent.agentId === this.agentId) {
+        this.state.agent = agent;
+
+        this.state.messages =
+          this.localStorage.getItem(StateManager.keys.messages) ||
+          getInitialState(this.agentId).messages;
+
+        this.state.layout =
+          this.localStorage.getItem(StateManager.keys.layout) ||
+          getInitialState(this.agentId).layout;
       }
     }
-  }
-
-  private updateAgentStorage() {
-    if (!this.state.isLocalStorageAvailable) {
-      return;
-    }
-
-    const agent = localStorage.getItem(StateManager.keys.agent);
-
-    if (!agent) {
-      localStorage.setItem(StateManager.keys.agent, this.serialize([]));
-      throw new Error("An error occurred while updating agent. The agent was reset.");
-    }
-
-    localStorage.setItem(StateManager.keys.agent, this.serialize(this.state.agent));
   }
 
   private clearAgentState() {
-    this.state.agent = initialState.agent;
-
-    if (!this.state.isLocalStorageAvailable) {
-      return;
-    }
-
-    localStorage.removeItem(StateManager.keys.agent);
-  }
-
-  /**
-   * Returns true if LocalStorage is available
-   */
-  private testLocalStorage() {
-    if (this.state.isLocalStorageAvailable !== undefined) {
-      return this.state.isLocalStorageAvailable;
-    }
-
-    const testKey = "localstorage_test_key";
-    const testValue = "localstorage_test_value";
-    try {
-      localStorage.setItem(testKey, testValue);
-      if (localStorage.getItem(testKey) === testValue) {
-        localStorage.removeItem(testKey);
-        this.state.isLocalStorageAvailable = true;
-      }
-    } catch (err) {
-      this.state.isLocalStorageAvailable = false;
-    }
-    return this.state.isLocalStorageAvailable;
-  }
-
-  private serialize(value: any) {
-    return JSON.stringify(value);
-  }
-
-  private deserialize(value: any) {
-    return JSON.parse(value);
+    this.state.agent = getInitialState(this.agentId).agent;
+    // Update local storage
+    this.localStorage.setItem(StateManager.keys.agent, this.state.agent);
   }
 }

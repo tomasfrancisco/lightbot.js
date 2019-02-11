@@ -1,10 +1,12 @@
 import { LightbotMessage } from "./messenger";
-import { AgentState, initialState, LayoutState, StateManager } from "./state-manager";
+import { AgentState, getInitialState, LayoutState, StateManager } from "./state-manager";
 
 describe("StateManager", () => {
+  const agentId = "agent-id";
+
   describe("localStorage unavailable", () => {
     it("not throw any error on constructor", () => {
-      const call = () => new StateManager();
+      const call = () => new StateManager(agentId);
       expect(call).not.toThrow();
     });
 
@@ -12,7 +14,7 @@ describe("StateManager", () => {
       let stateManager: StateManager;
 
       beforeEach(() => {
-        stateManager = new StateManager();
+        stateManager = new StateManager(agentId);
       });
 
       it("adds new message when message is saved", () => {
@@ -35,7 +37,7 @@ describe("StateManager", () => {
       const overrideLayout: LayoutState = { someValue: true };
 
       beforeEach(() => {
-        stateManager = new StateManager();
+        stateManager = new StateManager(agentId);
         stateManager.updateLayout(initialLayout);
       });
 
@@ -58,24 +60,23 @@ describe("StateManager", () => {
 
     describe("with clean localStorage", () => {
       it("initializes empty messages storage", () => {
-        expect(new StateManager().messages).toHaveLength(0);
+        expect(new StateManager(agentId).messages).toHaveLength(0);
       });
     });
 
     describe("constructor when existing localStorage", () => {
-      let initialMessages: LightbotMessage[];
-      let initialLayout: LayoutState;
-      let initialAgent: AgentState;
+      const initialMessages: LightbotMessage[] = [
+        { type: "plain", sender: "bot", label: "Test message from bot" },
+      ];
+      const initialLayout: LayoutState = { isMessengerOpen: true };
+      const initialAgent: AgentState = { agentId, isInitialized: true };
       let stateManager: StateManager;
 
       beforeEach(() => {
-        initialMessages = [{ type: "plain", sender: "bot", label: "Test message from bot" }];
-        initialLayout = { isMessengerOpen: true };
-        initialAgent = { isInitialized: true };
         localStorage.setItem(StateManager.keys.messages, JSON.stringify(initialMessages));
         localStorage.setItem(StateManager.keys.layout, JSON.stringify(initialLayout));
         localStorage.setItem(StateManager.keys.agent, JSON.stringify(initialAgent));
-        stateManager = new StateManager();
+        stateManager = new StateManager(agentId);
       });
 
       it("initializes messages from localStorage", () => {
@@ -96,7 +97,7 @@ describe("StateManager", () => {
       const message: LightbotMessage = { sender: "human", label: "test message", type: "plain" };
 
       beforeEach(() => {
-        stateManager = new StateManager();
+        stateManager = new StateManager(agentId);
       });
 
       it("adds new message when message is saved", () => {
@@ -122,7 +123,7 @@ describe("StateManager", () => {
       const overrideLayout: LayoutState = { someValue: true };
 
       beforeEach(() => {
-        stateManager = new StateManager();
+        stateManager = new StateManager(agentId);
         stateManager.updateLayout(initialLayout);
       });
 
@@ -150,7 +151,7 @@ describe("StateManager", () => {
       };
 
       const initialAgent: AgentState = {
-        id: "agent-id",
+        agentId,
       };
 
       beforeEach(() => {
@@ -158,7 +159,7 @@ describe("StateManager", () => {
         localStorage.setItem(StateManager.keys.layout, JSON.stringify(initialLayout));
         localStorage.setItem(StateManager.keys.agent, JSON.stringify(initialAgent));
 
-        stateManager = new StateManager();
+        stateManager = new StateManager(agentId);
       });
 
       it("loads with localStorage", () => {
@@ -169,9 +170,9 @@ describe("StateManager", () => {
 
       it("resets agent state", () => {
         stateManager.resetState();
-        expect(stateManager.messages).toEqual(initialState.messages);
-        expect(stateManager.agent).toEqual(initialState.agent);
-        expect(stateManager.layout).toEqual(initialState.layout);
+        expect(stateManager.messages).toEqual(getInitialState(agentId).messages);
+        expect(stateManager.agent).toEqual(getInitialState(agentId).agent);
+        expect(stateManager.layout).toEqual(getInitialState(agentId).layout);
       });
     });
   });
